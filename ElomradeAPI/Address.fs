@@ -1,5 +1,6 @@
 ﻿module Address
 
+open System.Text
 open System.Net
 open FSharp.Data
 open System
@@ -53,40 +54,45 @@ let ParseAddressComponents (json : JsonValue) (jsonObject : string) =
     | None -> None
 
 let ParseAddressJson(json : JsonValue) : Address list = 
-    match json.TryGetProperty "status" with
+    let result = json.TryGetProperty "results"
+    [ for x in result.Value do
+      yield { Address = (ParseAddressComponents x "route") |> Option.bind (fun v -> v.LongName)
+              ZipCode = (ParseAddressComponents x "postal_code") |> Option.bind (fun v -> v.LongName)
+              City = (ParseAddressComponents x "locality") |> Option.bind (fun v -> v.LongName)
+              Country = (ParseAddressComponents x "country") |> Option.bind (fun v -> v.LongName)
+              AddressNumber = (ParseAddressComponents x "street_number") |> Option.bind (fun v -> v.LongName)
+              FormattedAddress = JsonTryGetString x "formatted_address"
+              Location = 
+              (x.TryGetProperty "geometry")
+              |> Option.bind (fun geo -> geo.TryGetProperty "location")
+              |> Option.bind 
+                        (fun loc -> 
+                         Some((loc.GetProperty "lng").AsFloat(), ((loc.GetProperty "lat").AsFloat()))) } ]
+
+
+let ParseResult (json : JsonValue) =
+ match json.TryGetProperty "status" with
     | Some(value) -> 
         match value.AsString() with
-        | "OK" -> 
-            let result = json.TryGetProperty "results"
-            [ for x in result.Value do
-                  yield { Address = (ParseAddressComponents x "route") |> Option.bind (fun v -> v.LongName)
-                          ZipCode = (ParseAddressComponents x "postal_code") |> Option.bind (fun v -> v.LongName)
-                          City = (ParseAddressComponents x "locality") |> Option.bind (fun v -> v.LongName)
-                          Country = (ParseAddressComponents x "country") |> Option.bind (fun v -> v.LongName)
-                          AddressNumber = 
-                              (ParseAddressComponents x "street_number") |> Option.bind (fun v -> v.LongName)
-                          FormattedAddress = JsonTryGetString x "formatted_address"
-                          Location = 
-                              (x.TryGetProperty "geometry")
-                              |> Option.bind (fun geo -> geo.TryGetProperty "location")
-                              |> Option.bind 
-                                     (fun loc -> 
-                                     Some((loc.GetProperty "lng").AsFloat(), ((loc.GetProperty "lat").AsFloat()))) } ]
-        | "ZERO_RESULTS" -> []
-        | "OVER_QUERY_LIMIT" -> []
-        | "REQUEST_DENIED" -> []
-        | "INVALID_REQUEST" -> []
-        | "UNKNOWN_ERROR" -> []
-        | _ -> []
-    | None -> []
-
+        | "OK" -> ("OK", ParseAddressJson json)
+        | "ZERO_RESULTS" -> ("ZERO_RESULTS", [])
+        | "OVER_QUERY_LIMIT" -> ("OVER_QUERY_LIMIT", [])
+        | "REQUEST_DENIED" -> ("REQUEST_DENIED", [])
+        | "INVALID_REQUEST" -> ("INVALID_REQUEST", [])
+        | "UNKNOWN_ERROR" -> ("UNKNOWN_ERROR", [])
+        | _ -> ("UNMATCHED_ERROR", [])
+    | None -> ("NO_STATUS", [])
+   
 let AddressToJson(address : Address) = 
     let (lat, lng) = PointToString address.Location.Value
-    "{" + OptionStringToJson "Address" address.Address + "," + OptionStringToJson "AddressNumber" address.AddressNumber 
-    + "," + OptionStringToJson "Zipcode" address.ZipCode + "," + OptionStringToJson "City" address.City + "," 
+    "{" + OptionStringToJson "Address" address.Address + ","
+    + OptionStringToJson "AddressNumber" address.AddressNumber  + ","
+    + OptionStringToJson "Zipcode" address.ZipCode + ","
+    + OptionStringToJson "City" address.City + "," 
     + OptionStringToJson "Country" address.Country + "," 
-    + OptionStringToJson "Formatted Address" address.FormattedAddress + "," + StringToJson "Longitude" lng + "," 
-    + StringToJson "Latitude" lat + "}"
+    + OptionStringToJson "Formatted Address" address.FormattedAddress + ","
+    + ValueToJson "Longitude" lng + "," 
+    + ValueToJson "Latitude" lat + "}"
 
 let AddressListToJson(addressList : Address list) = 
     let addressJsonString = 
@@ -102,5 +108,5 @@ let GetAddressPostions address =
         let client = new WebClient()
         let! data = client.AsyncDownloadString(new Uri(geoUrl))
         let json = JsonValue.Parse data
-        return ParseAddressJson(json)
+        return ParseResult json
     }

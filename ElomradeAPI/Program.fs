@@ -16,16 +16,53 @@ open Suave.Web
 open Suave.Operators
 open Suave.Files
 
+let IsSuccess value =
+    match value with
+        | "OK" -> "1"
+        | _ -> "0"
+
+let GetErrorCode value =
+    match value with
+        | "OK" -> "0"
+        | "ZERO_RESULTS" -> "2"
+        | "OVER_QUERY_LIMIT" -> "3"
+        | "REQUEST_DENIED" -> "4"
+        | "INVALID_REQUEST" -> "5"
+        | "UNKNOWN_ERROR" -> "98"
+        | _ -> "99"
+
+let GetErrorString value =
+    match value with
+        | "OK" -> "\"\""
+        | errorString -> errorString
+
+
 let WhichNetareaIsAddressIn address netAreas = 
-    let addresses = GetAddressPostions address |> Async.RunSynchronously   
+    let (result, addresses) = GetAddressPostions address |> Async.RunSynchronously   
     let matches = 
         addresses 
-            |> List.fold (fun acc elm -> 
+            |> List.fold (fun acc elm ->
                 if acc = "" then
-                    "{ \"NetArea\" : " + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas) + ", \"Address\" : " + AddressToJson elm + "}"    
+                     "\"NetArea\" : "
+                    + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas)
+                    + ", \"Address\" : "
+                    + AddressToJson elm
+                    + "}"    
                 else 
-                    "{ \"NetArea\" : " + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas) + ", \"Address\" : " + AddressToJson elm + "}, " + acc) ""
-    "[" + matches + "]"
+                     "\"NetArea\" : "
+                    + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas)
+                    + ", \"Address\" : "
+                    + AddressToJson elm + "}, " + acc) ""
+    "{"
+     + "{"
+     + "\"Success\" : "
+     + IsSuccess result
+     + ", \"ErrorCode\" : "
+     + GetErrorCode result
+     + ", \"ErrorString\" : "
+     + GetErrorString result
+     + ",\"Result\" : ["
+      + matches + "]}"
 
 let loadNetAreas() = 
     try 
@@ -56,7 +93,8 @@ let serverConfig =
 let main argv = 
     let netAreas = loadNetAreas()   
     let app : WebPart = 
-        choose [ choose [ pathScan "/API/netarea/address/%s" (fun addr -> OK((WhichNetareaIsAddressIn addr netAreas))) 
+        choose [ choose [ pathScan "/API/netarea/address/%s" (fun addr ->
+                                                              OK((WhichNetareaIsAddressIn addr netAreas))) 
                           >=> Writers.setMimeType "application/json; charset=utf-8"
                           path "/" >=> file "web/index.html"
                           pathScan "/css/%s" (fun addr -> file ("css/" + addr))
