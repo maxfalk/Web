@@ -1,0 +1,86 @@
+<html>
+<head>
+    <title>Falk</title>
+    <link rel="stylesheet" href="css/bulma.css">
+    <script>
+        function getNetArea() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    console.log(xhttp.responseText);
+                    var response = JSON.parse(xhttp.responseText);
+                    printResponse(response.Result);
+                }
+            };
+            
+            xhttp.open('GET', encodeURI('API/netarea/address/' + document.getElementById("Address").value), true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send();
+        }
+        function printResponse(arr) {
+            console.log(arr);
+            var head = "<thead><tr><th>NetAreaName</th><th>Company</th><th>NetAreaID</th><th>Address</th></tr></thead>"
+            var out = "";
+            var i;
+            for (i = 0; i < arr.length; i++) {
+                var NetArea = arr[i].NetArea;
+                var Address = arr[i].Address;
+                out += "<tr><td>" + NetArea.NetAreaName + "</td><td>" + NetArea.Company + "</td><td>" + NetArea.NetAreaID + "</td><td>" + Address["Formatted Address"] + "</td></tr>";
+             
+            }
+            document.getElementById("output").innerHTML = head + out;
+        }
+        function handle(e) {
+            if (e.keyCode === 13) {
+                getNetArea();
+            }
+        }
+    </script>
+</head>
+<body>
+    <section class="hero is-dark">
+        <div class="hero-content">
+            <div class="container ">
+                <h1 class="title">
+                    Falk
+                </h1>
+                <hr>
+                <h2 class="subtitle">
+                    Programming projects
+                </h2>
+            </div>
+        </div>
+    </section>
+    <section class="section is-fullwidth">
+        <div class="container">
+            <h1 class="title is-1 has-text-centered">
+                Netarea
+            </h1>
+            <h2 class="subtitle has-text-centered">Power Hungry</h2>
+            <div class="control is-horizontal">
+                <div class="control">
+                    <input class="input is-primary" id="Address" type="text" placeholder="Search for power" onkeypress="handle(event)">
+                </div>
+                <button class="button is-info" onclick="getNetArea()">
+                    Search
+                </button>
+            </div>
+            <table class="table" id="output">
+            </table>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <figure class="image is-32x32">
+                <a href="https://github.com/maxfalk">
+                    <img src="images/GitHub-Mark-32px.png">
+                </a>
+            </figure>
+            <hr />
+            <p>
+                Personal website of Max Falk
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

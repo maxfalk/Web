@@ -130,4 +130,19 @@ let gparsed =  ParseAddressJson(gjson)
 
 Encoding.UTF8.GetString (toJson gparsed)
 
-gparsed
+open System.Text
+open System.Net
+open FSharp.Data
+open System.IO
+open System
+
+let address = "skördevägen 34 östersund"
+let apiKey = "AIzaSyALKUXasyH_3ktBiHBD54PwsWHLN6RFC58"
+let geoUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + apiKey
+let client = new WebClient()
+client.Headers.Add(HttpRequestHeader.AcceptCharset, "UTF-8")
+let data = client.DownloadData(new Uri(geoUrl))
+
+let s = Encoding.UTF8.GetString(data)
+
+s;;

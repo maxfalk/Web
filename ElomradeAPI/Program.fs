@@ -43,18 +43,19 @@ let WhichNetareaIsAddressIn address netAreas =
         addresses 
             |> List.fold (fun acc elm ->
                 if acc = "" then
-                     "\"NetArea\" : "
+                    "{"
+                    + "\"NetArea\" : "
                     + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas)
                     + ", \"Address\" : "
                     + AddressToJson elm
                     + "}"    
                 else 
-                     "\"NetArea\" : "
+                    "{"
+                    + "\"NetArea\" : "
                     + NetAreaToJson (isInWhichNetArea elm.Location.Value netAreas)
                     + ", \"Address\" : "
                     + AddressToJson elm + "}, " + acc) ""
     "{"
-     + "{"
      + "\"Success\" : "
      + IsSuccess result
      + ", \"ErrorCode\" : "
@@ -87,7 +88,7 @@ let loadNetAreas() =
 
 let serverConfig = 
     { defaultConfig with logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Verbose
-                         bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8082us ] }
+                         bindings = [ HttpBinding.mk HTTP IPAddress.Any 80us ] }
 
 [<EntryPoint>]
 let main argv = 

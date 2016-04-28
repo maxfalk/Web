@@ -107,6 +107,7 @@ let GetAddressPostions address =
         let geoUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + apiKey
         let client = new WebClient()
         let! data = client.AsyncDownloadString(new Uri(geoUrl))
-        let json = JsonValue.Parse data
+        let s = Encoding.UTF8.GetString(Encoding.Default.GetBytes(data))
+        let json = JsonValue.Parse s
         return ParseResult json
     }
