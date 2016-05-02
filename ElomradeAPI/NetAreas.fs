@@ -2,6 +2,8 @@
 
 open FSharp.Data
 open Point
+open XMLEncode
+open JsonEncode
 
 type private Polygon = Point List
 
@@ -113,23 +115,24 @@ let rec isInWhichNetArea (point : Point) (netAreaList : NetArea List) =
 let NetAreaToJson(netarea : NetArea option) = 
     match netarea with
     | None -> "{}"
-    | Some(value) -> 
-        let name = 
-            match value.NetAreaName with
-            | None -> ""
-            | Some(value) -> value
+    | Some(value) ->
+    "{" 
+    + OptionValueToJson "ID" value.NetAreaID + ","
+    + OptionValueToJson "Name" value.NetAreaName + ","
+    + OptionValueToJson "Company" value.Company
+    + "}"    
         
-        let company = 
-            match value.Company with
-            | None -> ""
-            | Some(value) -> value
-        
-        let area = 
-            match value.NetAreaID with
-            | None -> ""
-            | Some(value) -> value
-        
-        "{\"NetAreaName\" : \" " + name + "\", \"Company\" : \"" + company + "\", \"NetAreaID\": \"" + area + "\"}"
+
+let NetAreaToXML(netArea : NetArea Option) =
+    match netArea with
+        | None -> ""
+        | Some(value) ->
+            MakeXMLTagFromOption "ID" value.Company
+            + MakeXMLTagFromOption "Name" value.NetAreaName
+            + MakeXMLTagFromOption "Company" value.Company
+
+            
+
 
 let NetAreaListToJson(netareaList : NetArea option List) = 
     let json = 

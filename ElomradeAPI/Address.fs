@@ -6,6 +6,7 @@ open FSharp.Data
 open System
 open Point
 open JsonEncode
+open XMLEncode
 
 type AddressComponent = 
     { LongName : string option
@@ -100,6 +101,19 @@ let AddressListToJson(addressList : Address list) =
                            if acc = "" then AddressToJson elm
                            else acc + "," + AddressToJson elm) ""
     "{\"Addresses\" : [" + addressJsonString + "]}"
+
+let AddressToXML(address : Address) =
+    let (lat, lng) = PointToString address.Location.Value
+    MakeXMLTagFromOption "Address" address.Address +
+    MakeXMLTagFromOption "AddressNumber" address.AddressNumber +
+    MakeXMLTagFromOption "Zipcode" address.ZipCode +
+    MakeXMLTagFromOption "City" address.City +
+    MakeXMLTagFromOption "Country" address.Country +
+    MakeXMLTagFromOption "FormattedAddress" address.FormattedAddress +
+    MakeXMLTag "Longitude" lng +
+    MakeXMLTag "Latitude" lat
+               
+
 
 let GetAddressPostions address = 
     async { 

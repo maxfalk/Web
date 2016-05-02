@@ -1,13 +1,13 @@
-﻿// Learn more about F# at http://fsharp.org
-// See the 'F# Tutorial' project for more help.
-module Program
+﻿module Program
 
+open System.IO
 open System.Text
 open System.Net
 open NetAreas
 open Address
 open Point
-open System.IO
+open XMLEncode
+
 open Suave
 open Suave.Http
 open Suave.Filters
@@ -36,8 +36,19 @@ let GetErrorString value =
         | "OK" -> "\"\""
         | errorString -> errorString
 
+let GetNetAreaOfAddressToXML address netAreas = 
+    let (result, addresses) = GetAddressPostions address |> Async.RunSynchronously   
+    let matches = addresses |> List.fold (fun acc elm -> MakeXMLTag "Record" (MakeXMLTag "NetArea" (NetAreaToXML (isInWhichNetArea elm.Location.Value netAreas)) + MakeXMLTag "Address" (AddressToXML elm)) + acc) ""
+    let success = MakeXMLTag "Success" (IsSuccess result)
+    let errorCode = MakeXMLTag "ErrorCode" (GetErrorCode result)
+    let errorString = MakeXMLTag "ErrorString" (GetErrorString result)
+    let records = (MakeXMLTagWithAttribute "Result" matches "recordes" (addresses.Length.ToString()))
+    MakeXMLTag "root" ( success + errorCode + errorString + records)
+     
 
-let WhichNetareaIsAddressIn address netAreas = 
+
+
+let GetNetAreaOfAddressToJson address netAreas = 
     let (result, addresses) = GetAddressPostions address |> Async.RunSynchronously   
     let matches = 
         addresses 
@@ -88,18 +99,21 @@ let loadNetAreas() =
 
 let serverConfig = 
     { defaultConfig with logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Verbose
-                         bindings = [ HttpBinding.mk HTTP IPAddress.Any 80us ] }
+                         bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8082us ] }
 
 [<EntryPoint>]
 let main argv = 
     let netAreas = loadNetAreas()   
     let app : WebPart = 
-        choose [ choose [ pathScan "/API/netarea/address/%s" (fun addr ->
-                                                              OK((WhichNetareaIsAddressIn addr netAreas))) 
+        choose [ choose [ pathScan "/API/json/netarea/address/%s" (fun addr ->
+                                                              OK((GetNetAreaOfAddressToJson addr netAreas))) 
+                          >=> Writers.setMimeType "application/json; charset=utf-8"
+                          pathScan "/API/xml/netarea/address/%s" (fun addr ->
+                                                                 OK((GetNetAreaOfAddressToXML addr netAreas))) 
                           >=> Writers.setMimeType "application/json; charset=utf-8"
                           path "/" >=> file "web/index.html"
-                          pathScan "/css/%s" (fun addr -> file ("css/" + addr))
+                          pathScan "web/css/%s" (fun addr -> file ("css/" + addr))
                           pathScan "/%s" (fun addr -> file ("web/" + addr))
-                          pathScan "/images/%s" (fun addr -> file ("images/" + addr)) ] ]
+                          pathScan "web/images/%s" (fun addr -> file ("images/" + addr)) ] ]
     startWebServer serverConfig app
     0

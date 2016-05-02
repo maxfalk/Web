@@ -1,10 +1,11 @@
 ﻿module JsonEncode
 
+
 let ValueToString value =
    string value 
 
 let ValueToJson tag value = 
-    "\"" + tag + "\" : " + ValueToString value
+    "\"" + tag + "\" : \"" + ValueToString value + "\""
 
 let StringToJson tag (value:string) = 
     "\"" + tag + "\" : \"" +  value + "\""
@@ -24,4 +25,13 @@ let OptionStringToJson tag value =
         | None ->
             StringToJson tag ""
 
+let private JsonConcat values =
+    let appendIfNotFirst acc value =
+        if acc = "" then
+            value
+        else
+            "," + value
+    values |> List.fold appendIfNotFirst ""
 
+let MakeJsonArray values =
+    "\[" + JsonConcat values  + "\]"
