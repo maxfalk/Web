@@ -13,7 +13,7 @@
                 }
             };
             
-            xhttp.open('GET', encodeURI('API/netarea/address/' + document.getElementById("Address").value), true);
+            xhttp.open('GET', encodeURI(window.location.hostname + 'API/json/netarea/address/' + document.getElementById("Address").value), true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send();
         }
@@ -25,7 +25,7 @@
             for (i = 0; i < arr.length; i++) {
                 var NetArea = arr[i].NetArea;
                 var Address = arr[i].Address;
-                out += "<tr><td>" + NetArea.NetAreaName + "</td><td>" + NetArea.Company + "</td><td>" + NetArea.NetAreaID + "</td><td>" + Address["Formatted Address"] + "</td></tr>";
+                out += "<tr><td>" + NetArea.Name + "</td><td>" + NetArea.Company + "</td><td>" + NetArea.ID + "</td><td>" + Address["Formatted Address"] + "</td></tr>";
              
             }
             document.getElementById("output").innerHTML = head + out;
@@ -41,33 +41,46 @@
     <section class="hero is-dark">
         <div class="hero-content">
             <div class="container ">
-                <h1 class="title">
-                    Falk
-                </h1>
+                <h1 class="title">Falk</h1>
                 <hr>
-                <h2 class="subtitle">
-                    Programming projects
-                </h2>
+                <h2 class="subtitle">Programming projects</h2>
             </div>
         </div>
     </section>
     <section class="section is-fullwidth">
         <div class="container">
-            <h1 class="title is-1 has-text-centered">
-                Netarea
-            </h1>
-            <h2 class="subtitle has-text-centered">Power Hungry</h2>
+            <h1 class="title is-1 has-text-centered">Netarea</h1>
+            <h2 class="subtitle has-text-centered">Power Squared</h2>
             <div class="control is-horizontal">
-                <div class="control">
-                    <input class="input is-primary" id="Address" type="text" placeholder="Search for power" onkeypress="handle(event)">
-                </div>
-                <button class="button is-info" onclick="getNetArea()">
-                    Search
-                </button>
+              <div class="control">
+                <input class="input is-primary" id="Address" type="text" placeholder="Search for power" onkeypress="handle(event)">
+              </div>
+              <button class="button is-info" onclick="getNetArea()">
+                Search
+              </button>
             </div>
             <table class="table" id="output">
             </table>
         </div>
+    </section>
+    <section class="section">
+	<div class="container content">
+	  <h1 class="title">NetAreas</h1>
+	  <h2 class="subtitle">Sweden</h2>
+	      <p>
+		Swedens power gird is divide into different netareas. These netareas are owned by different companies.
+		If you want to contact the owner of the netarea you live in you will have to know who that company is.
+		There are a couple of websites that do this but they are either restricted or those not provide a public API.
+	      </p>
+	      <p>
+		Here you can find a basic way you finding which netarea a address in Sweden is located in. Simply type the address with
+		as much detail as possible and a search for the netarea will be performed.
+	      </p>
+	      <p>
+		There is also an API at <a href="API/json/netarea/address/sveavägen 12 Stockholm">Sveavägen 12 Stockholm</a> and
+		<a href="API/xml/netarea/address/Sveavägen 12 Stockholm">Sveavägen 12 Stockholm</a>.
+	      </p>
+	</div>
     </section>
     <footer class="footer">
         <div class="container">
