@@ -127,7 +127,7 @@ let NetAreaToXML(netArea : NetArea Option) =
     match netArea with
         | None -> ""
         | Some(value) ->
-            MakeXMLTagFromOption "ID" value.Company
+            MakeXMLTagFromOption "ID" value.NetAreaID
             + MakeXMLTagFromOption "Name" value.NetAreaName
             + MakeXMLTagFromOption "Company" value.Company
 
