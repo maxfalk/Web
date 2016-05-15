@@ -1,5 +1,5 @@
 ﻿module Point
-type Point = float * float
+type Point = decimal * decimal
 
 
 let PointToString (point:Point) =

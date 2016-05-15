@@ -5,6 +5,7 @@ open NetAreas
 open Address
 open Point
 open XMLEncode
+open JsonEncode
 open Suave
 open Suave.Http
 open Suave.Filters
@@ -30,7 +31,7 @@ let GetErrorCode value =
 
 let GetErrorString value = 
     match value with
-    | "OK" -> "\"\""
+    | "OK" -> ""
     | errorString -> errorString
 
 let GetNetAreaOfAddressToXML address netAreas = 
@@ -45,12 +46,12 @@ let GetNetAreaOfAddressToXML address netAreas =
     let success = MakeXMLTag "Success" (IsSuccess result)
     let errorCode = MakeXMLTag "ErrorCode" (GetErrorCode result)
     let errorString = MakeXMLTag "ErrorString" (GetErrorString result)
-    let records = (MakeXMLTagWithAttribute "Result" matches "recordes" (addresses.Length.ToString()))
-    MakeXMLTag "root" (success + errorCode + errorString + records)
+    let records = (MakeXMLTagWithAttribute "Result" matches "records" (addresses.Length.ToString()))
+    MakeXMLHeader
+    + MakeXMLTag "root" (success + errorCode + errorString + records)
 
 let GetNetAreaOfAddressToJson address netAreas = 
-    let (result, addresses) = GetAddressPostions address |> Async.RunSynchronously
-    
+    let (result, addresses) = GetAddressPostions address |> Async.RunSynchronously    
     let matches = 
         addresses 
         |> List.fold 
@@ -61,33 +62,16 @@ let GetNetAreaOfAddressToJson address netAreas =
                else 
                    "{" + "\"NetArea\" : " + NetAreaToJson(isInWhichNetArea elm.Location.Value netAreas) 
                    + ", \"Address\" : " + AddressToJson elm + "}, " + acc) ""
-    "{" + "\"Success\" : " + IsSuccess result + ", \"ErrorCode\" : " + GetErrorCode result + ", \"ErrorString\" : " 
-    + GetErrorString result + ",\"Result\" : [" + matches + "]}"
+    "{" + StringToJson "Success" (IsSuccess result)
+    + ", " + StringToJson "ErrorCode" (GetErrorCode result) 
+    + ", " + StringToJson "ErrorString" (GetErrorString result)
+    + ",\"Result\" : [" + matches + "]}"
 
-let loadNetAreas() = 
-    try 
-        let jsonStr = File.ReadAllText(@"jsonData.txt", Encoding.UTF8)
-        getNetAreas jsonStr
-    with
-    | :? System.ArgumentException as ex -> 
-        printfn "%s" ex.Message
-        []
-    | :? System.IO.IOException as ex -> 
-        printfn "%s" ex.Message
-        []
-    | :? System.UnauthorizedAccessException as ex -> 
-        printfn "%s" ex.Message
-        []
-    | :? System.NotSupportedException as ex -> 
-        printfn "%s" ex.Message
-        []
-    | :? System.Security.SecurityException as ex -> 
-        printfn "%s" ex.Message
-        []
+
 
 let serverConfig = 
     { defaultConfig with logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Verbose
-                         bindings = [ HttpBinding.mk HTTP IPAddress.Any 80us ] }
+                         bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8082us ] }
 
 [<EntryPoint>]
 let main argv = 
@@ -95,7 +79,7 @@ let main argv =
     let app : WebPart = 
             choose 
                   [ pathScan "/API/json/netarea/address/%s" (fun addr -> OK((GetNetAreaOfAddressToJson addr netAreas))) >=> Writers.setMimeType "application/json; charset=utf-8"
-                    pathScan "/API/xml/netarea/address/%s" (fun addr -> OK((GetNetAreaOfAddressToXML addr netAreas))) >=> Writers.setMimeType "application/json; charset=utf-8" 
+                    pathScan "/API/xml/netarea/address/%s" (fun addr -> OK((GetNetAreaOfAddressToXML addr netAreas))) >=> Writers.setMimeType "application/xml; charset=utf-8" 
                     path "/" >=> file "web/index.html" >=> Writers.setMimeType "charset=utf-8"
                     pathScan "web/css/%s" (fun addr -> file ("css/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "/%s" (fun addr -> file ("web/" + addr)) >=> Writers.setMimeType "charset=utf-8"

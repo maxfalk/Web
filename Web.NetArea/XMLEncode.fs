@@ -1,5 +1,7 @@
 module XMLEncode
 
+let MakeXMLHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+
 let MakeXMLTag tag value =
     "<" + tag + ">" + value + "</" + tag + ">"
 
