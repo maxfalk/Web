@@ -6,6 +6,7 @@ open Address
 open Point
 open XMLEncode
 open JsonEncode
+open WebLogger
 open Suave
 open Suave.Http
 open Suave.Filters
@@ -70,7 +71,7 @@ let GetNetAreaOfAddressToJson address netAreas =
 
 
 let serverConfig = 
-    { defaultConfig with logger = Logging.Loggers.saneDefaultsFor Logging.LogLevel.Verbose
+    { defaultConfig with logger = new WebLogger.WebLogger()
                          bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8082us ] }
 
 [<EntryPoint>]
@@ -84,5 +85,5 @@ let main argv =
                     pathScan "web/css/%s" (fun addr -> file ("css/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "/%s" (fun addr -> file ("web/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "web/images/%s" (fun addr -> file ("images/" + addr)) >=> Writers.setMimeType "charset=utf-8" ] 
-    startWebServer serverConfig app
+    startWebServer defaultConfig app  
     0
