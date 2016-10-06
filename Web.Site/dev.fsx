@@ -1,14 +1,15 @@
 ﻿
 #I "../packages/FSharp.Charting.0.90.13"
+#I "../packages/Fsharp"
 #r "bin/FSharp.Data.dll"
 #I "../packages/FSharp.Data.2.2.5"
 #load "FSharp.Charting.fsx"
 #r "bin/FSharp.Data.DesignTime.dll"
 #r "bin/Suave.dll"
-#load "Point.fs"
-#load "NetAreas.fs"
-#load "JsonEncode.fs"
-#load "Address.fs"
+#load "../Web.NetArea/Point.fs"
+#load "../Web.NetArea/NetAreas.fs"
+#load "../Web.NetArea/JsonEncode.fs"
+#load "../Web.NetArea/Address.fs"
 
 open System.Text
 open System.Net

@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{F73D9FD1-991C-4F8F-8A77-4A750BC681A1}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Web.NetArea", "Web.NetArea\Web.NetArea.fsproj", "{2887104E-54EC-4DA8-BAE6-13CFA304207C}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Web.Site", "Web.Site\Web.Site.fsproj", "{AB956B2C-60CE-4090-AD68-92F1B0D0A9CD}"

@@ -2,7 +2,6 @@
 
 open System.IO
 open System.Text
-open Domain
 open FSharp.Data
 open Point
 open XMLEncode

@@ -7,10 +7,13 @@ open System
 open Point
 open JsonEncode
 open XMLEncode
+
 [<Literal>]
-let JsonProviderString = "https://maps.googleapis.com/maps/api/geocode/json?address=Kungliga Slottet 07 70 Stockholm&key=AIzaSyALKUXasyH_3ktBiHBD54PwsWHLN6RFC58"
+//let JsonProviderString = "https://maps.googleapis.com/maps/api/geocode/json?address=Kungliga Slottet 07 70 Stockholm&key=AIzaSyALKUXasyH_3ktBiHBD54PwsWHLN6RFC58"
+let JsonProviderString = "googleAPI.json"
 type JsonAddressResult = JsonProvider<JsonProviderString>
 type Agent<'T> = MailboxProcessor<'T>
+
 type AddressComponent = 
     { LongName : string
       ShortName : string

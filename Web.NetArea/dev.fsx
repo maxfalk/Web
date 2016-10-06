@@ -1,4 +1,5 @@
-﻿#r "../packages/FSharp.Data.2.3.0/lib/net40/FSharp.Data.dll"
+﻿#r "lib/net40/FSharp.Data.dll"
+#r "lib/net40/FSharp.Data.DesignTime.dll"
 #load "Point.fs"
 open FSharp.Data
 open Point
@@ -17,7 +18,7 @@ type NetArea =
       Company : string option }
 
 
-type NetAreas = JsonProvider<"jsonData.json">
+type NetAreas = JsonProvider<"json.data">
 let netAreas = NetAreas.GetSamples()
 
 let printPolygon (item:decimal[][]) =

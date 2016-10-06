@@ -1,0 +1,65 @@
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "The Royal Palace",
+               "short_name" : "The Royal Palace",
+               "types" : [ "establishment", "point_of_interest" ]
+            },
+            {
+               "long_name" : "Södermalm",
+               "short_name" : "Södermalm",
+               "types" : [ "political", "sublocality", "sublocality_level_1" ]
+            },
+            {
+               "long_name" : "Stockholm",
+               "short_name" : "Stockholm",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Stockholm",
+               "short_name" : "Stockholm",
+               "types" : [ "postal_town" ]
+            },
+            {
+               "long_name" : "Stockholms län",
+               "short_name" : "Stockholms län",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "Sweden",
+               "short_name" : "SE",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "107 70",
+               "short_name" : "107 70",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "The Royal Palace, 107 70 Stockholm, Sweden",
+         "geometry" : {
+            "location" : {
+               "lat" : 59.3268215,
+               "lng" : 18.0717194
+            },
+            "location_type" : "APPROXIMATE",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 59.3281704802915,
+                  "lng" : 18.0730683802915
+               },
+               "southwest" : {
+                  "lat" : 59.3254725197085,
+                  "lng" : 18.0703704197085
+               }
+            }
+         },
+         "partial_match" : true,
+         "place_id" : "ChIJAUpMflidX0YRNj52SJZ6-b0",
+         "types" : [ "establishment", "museum", "point_of_interest", "premise" ]
+      }
+   ],
+   "status" : "OK"
+}
