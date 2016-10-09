@@ -3,11 +3,8 @@ open Suave.Logging
 
 
 type WebLogger() = 
-    let logToScreen level line =
-        line |> ignore
-
     interface Logger with 
-        member __.Log level line =
+        member x.Log level line =
             match level with
-                | LogLevel.Fatal -> logToScreen level line
-                | _ -> logToScreen level line
+                | LogLevel.Fatal -> printfn "Fatal Error: %s" (line()).message
+                | _ -> printfn "%s" (line()).message

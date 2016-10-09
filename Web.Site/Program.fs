@@ -71,8 +71,8 @@ let GetNetAreaOfAddressToJson address netAreas =
 
 
 let serverConfig = 
-    { defaultConfig with logger = new WebLogger.WebLogger()
-                         bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8082us ] }
+    { defaultConfig with logger = new WebLogger()
+                         bindings = [ HttpBinding.mk HTTP IPAddress.Loopback 8098us ] }
 
 [<EntryPoint>]
 let main argv = 
