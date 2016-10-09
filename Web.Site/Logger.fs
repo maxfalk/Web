@@ -15,9 +15,11 @@ type WebLogger() =
         msg |> formatLogMsg level |> fileWriter.Write
     
     let logToScreen level msg =
-        msg |> formatLogMsg level |> printfn "%s"  
+        msg |> formatLogMsg level |> printf "%s"  
 
     interface Logger with 
         member x.Log level line =
-            (line()).message |> logToScreen (level.ToString())  |> ignore
-            (line()).message |> logToFile (level.ToString())  |> ignore
+            let logLine = line()
+            if level >= LogLevel.Warn then
+                logLine.message |> logToScreen (level.ToString())  |> ignore
+            logLine.message |> logToFile (level.ToString())  |> ignore
