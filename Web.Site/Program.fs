@@ -85,5 +85,5 @@ let main argv =
                     pathScan "web/css/%s" (fun addr -> file ("css/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "/%s" (fun addr -> file ("web/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "web/images/%s" (fun addr -> file ("images/" + addr)) >=> Writers.setMimeType "charset=utf-8" ] 
-    startWebServer defaultConfig app  
+    startWebServer serverConfig app  
     0
