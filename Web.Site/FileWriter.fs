@@ -1,25 +1,26 @@
 module FileWriter
 open System.IO
-type FileWirterMsg = Msg of string | EXIT
+open Agent
+type FileWirterMsg = Msg of string*string | EXIT
 
-type FileWriter(file) =
+type FileWriter() =
     let writerAgent file = 
-        MailboxProcessor.Start(fun inbox ->
-            let rec loop file =
+        Agent.Start(fun inbox ->
+            let rec loop() =
                 async{
                     let! msg = inbox.Receive()
                     match msg with
-                    | Msg(value) ->
+                    | Msg(file, value) ->
                         File.AppendAllText(file, value) 
-                        return! loop file
+                        return! loop()
                     | EXIT ->
                         ()
                 }
-            loop file 
+            loop() 
         )      
-    let writer = writerAgent file
-    member this.Write text = 
-        writer.Post (FileWirterMsg.Msg text)
+    let writer = writerAgent()
+    member this.Write file text = 
+        writer.Post (FileWirterMsg.Msg (file,text))
     member this.Close() = 
         writer.Post FileWirterMsg.EXIT
 

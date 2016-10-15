@@ -54,6 +54,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Agent.fs" />
     <Compile Include="FileWriter.fs" />
     <Compile Include="Logger.fs" />
     <Compile Include="Program.fs" />

@@ -68,7 +68,14 @@ let GetNetAreaOfAddressToJson address netAreas =
     + ", " + StringToJson "ErrorString" (GetErrorString result)
     + ",\"Result\" : [" + matches + "]}"
 
-
+let startServer serverConfig app =
+    printfn "Starting webserver"
+    while true do
+        try
+            startWebServer serverConfig app
+        with ex ->
+            ()
+    printfn "Server shuttingdown"
 
 let serverConfig = 
     { defaultConfig with logger = new WebLogger()
@@ -76,7 +83,9 @@ let serverConfig =
 
 [<EntryPoint>]
 let main argv = 
+    printfn "Staring server"
     let netAreas = loadNetAreas()
+    printfn "Loaded netareas"
     let app : WebPart = 
             choose 
                   [ pathScan "/API/json/netarea/address/%s" (fun addr -> OK((GetNetAreaOfAddressToJson addr netAreas))) >=> Writers.setMimeType "application/json; charset=utf-8"
@@ -85,5 +94,5 @@ let main argv =
                     pathScan "web/css/%s" (fun addr -> file ("css/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "/%s" (fun addr -> file ("web/" + addr)) >=> Writers.setMimeType "charset=utf-8"
                     pathScan "web/images/%s" (fun addr -> file ("images/" + addr)) >=> Writers.setMimeType "charset=utf-8" ] 
-    startWebServer serverConfig app  
+    startServer serverConfig app |> ignore 
     0
